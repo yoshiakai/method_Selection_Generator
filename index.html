@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理・官能実験 手法選択プロンプトジェネレーター</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="bg-blue-600 p-6 text-white">
+            <h1 class="text-2xl font-bold">実験手法選択プロンプトジェネレーター</h1>
+            <p class="mt-2 text-sm opacity-90">心理実験や官能評価の初心者のためのツールです。質問に答えてプロンプトを生成し、ChatGPTなどに貼り付けてアドバイスをもらいましょう。</p>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-8">
+            <form id="generatorForm" class="space-y-6">
+                <!-- Q1 -->
+                <div>
+                    <label class="block text-lg font-medium text-gray-900 mb-2">Q1. 何を調べたいですか？（目的） <span class="text-red-500">*</span></label>
+                    <select id="q1" class="w-full border-gray-300 rounded-md shadow-sm p-3 border focus:ring-blue-500 focus:border-blue-500 bg-gray-50" required>
+                        <option value="" disabled selected>選択してください</option>
+                        <option value="AとB、どちらが好ましいか・優れているか比べたい">AとB、どちらが好ましいか・優れているか比べたい</option>
+                        <option value="複数のものの違いを、いくつかの項目で評価したい">複数のものの違いを、いくつかの項目で評価したい</option>
+                        <option value="複数の要素の間に、どのような関係性があるか知りたい">複数の要素の間に、どのような関係性があるか知りたい</option>
+                        <option value="似たような特徴を持つ人や物を、いくつかのグループに分類したい">似たような特徴を持つ人や物を、いくつかのグループに分類したい</option>
+                        <option value="人の行動や反応の速度、正確さを測りたい">人の行動や反応の速度、正確さを測りたい</option>
+                    </select>
+                </div>
+
+                <!-- Q2 -->
+                <div>
+                    <label class="block text-lg font-medium text-gray-900 mb-2">Q2. 比較するものの数はいくつですか？ <span class="text-red-500">*</span></label>
+                    <div class="space-y-2">
+                        <label class="flex items-center"><input type="radio" name="q2" value="2つ" class="h-4 w-4 text-blue-600" required><span class="ml-2">2つ</span></label>
+                        <label class="flex items-center"><input type="radio" name="q2" value="3つ以上" class="h-4 w-4 text-blue-600"><span class="ml-2">3つ以上</span></label>
+                        <label class="flex items-center"><input type="radio" name="q2" value="比較ではない・わからない" class="h-4 w-4 text-blue-600"><span class="ml-2">比較ではない・わからない</span></label>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div>
+                    <label class="block text-lg font-medium text-gray-900 mb-2">Q3. データを取る相手（被験者）は同じ人ですか？ <span class="text-red-500">*</span></label>
+                    <div class="space-y-2">
+                        <label class="flex items-center"><input type="radio" name="q3" value="同じ人がすべてのパターンを試す" class="h-4 w-4 text-blue-600" required><span class="ml-2">同じ人がすべてのパターンを試す</span></label>
+                        <label class="flex items-center"><input type="radio" name="q3" value="パターンごとに違う人に試してもらう" class="h-4 w-4 text-blue-600"><span class="ml-2">パターンごとに違う人に試してもらう</span></label>
+                        <label class="flex items-center"><input type="radio" name="q3" value="わからない" class="h-4 w-4 text-blue-600"><span class="ml-2">わからない</span></label>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div>
+                    <label class="block text-lg font-medium text-gray-900 mb-2">Q4. どのような形でデータを集めますか？ <span class="text-red-500">*</span></label>
+                    <select id="q4" class="w-full border-gray-300 rounded-md shadow-sm p-3 border focus:ring-blue-500 focus:border-blue-500 bg-gray-50" required>
+                        <option value="" disabled selected>選択してください</option>
+                        <option value="アンケート（5段階評価など）">アンケート（5段階評価など）</option>
+                        <option value="選択肢（はい/いいえ、A/Bなど）">選択肢（はい/いいえ、A/Bなど）</option>
+                        <option value="機器を使った計測（時間、心拍、脳波、視線など）">機器を使った計測（時間、心拍、脳波、視線など）</option>
+                        <option value="自由記述・インタビュー">自由記述・インタビュー</option>
+                    </select>
+                </div>
+
+                <!-- Q5 -->
+                <div>
+                    <label class="block text-lg font-medium text-gray-900 mb-2">Q5. 予算や機材の制約はありますか？ <span class="text-red-500">*</span></label>
+                    <div class="space-y-2">
+                        <label class="flex items-center"><input type="radio" name="q5" value="予算は全くない（0円〜数千円程度、スマホやフリーソフトで代用したい）" class="h-4 w-4 text-blue-600" required><span class="ml-2">予算は全くない（0円〜数千円程度、スマホやフリーソフトで代用したい）</span></label>
+                        <label class="flex items-center"><input type="radio" name="q5" value="少しならある（数万円程度、市販の安価なセンサーやマイコンなどは可能）" class="h-4 w-4 text-blue-600"><span class="ml-2">少しならある（数万円程度、市販の安価なセンサーやマイコンなどは可能）</span></label>
+                        <label class="flex items-center"><input type="radio" name="q5" value="必要な専用機材が揃っている" class="h-4 w-4 text-blue-600"><span class="ml-2">必要な専用機材が揃っている</span></label>
+                    </div>
+                </div>
+
+                <!-- Q6 -->
+                <div>
+                    <label class="block text-lg font-medium text-gray-900 mb-2">Q6. 具体的な内容（自由記述・任意）</label>
+                    <textarea id="q6" rows="4" class="w-full border-gray-300 rounded-md shadow-sm p-3 border focus:ring-blue-500 focus:border-blue-500 bg-gray-50" placeholder="例：コーヒーの苦味の感じ方を、音楽のテンポを変えて測りたいです。"></textarea>
+                </div>
+
+                <div class="pt-4 text-center">
+                    <button type="button" onclick="generatePrompt()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 text-lg">
+                        プロンプトを生成する
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 結果表示エリア -->
+        <div id="resultArea" class="hidden bg-gray-100 p-6 sm:p-8 border-t border-gray-200">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">生成されたプロンプト</h2>
+                <button onclick="copyToClipboard()" id="copyBtn" class="bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded shadow text-sm font-medium transition duration-200">
+                    コピーする
+                </button>
+            </div>
+            <textarea id="promptOutput" readonly class="w-full h-96 border-gray-300 rounded-md shadow-sm p-4 border bg-white text-sm font-mono focus:outline-none"></textarea>
+            <p class="text-sm text-gray-500 mt-3">※ 上記のテキストをコピーして、ChatGPTやClaudeなどのLLMに貼り付けてください。</p>
+        </div>
+    </div>
+
+    <script>
+        function generatePrompt() {
+            // 値の取得
+            const q1 = document.getElementById('q1').value;
+            const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+            const q3 = document.querySelector('input[name="q3"]:checked')?.value;
+            const q4 = document.getElementById('q4').value;
+            const q5 = document.querySelector('input[name="q5"]:checked')?.value;
+            const q6 = document.getElementById('q6').value || "特になし";
+
+            // バリデーション
+            if (!q1 || !q2 || !q3 || !q4 || !q5) {
+                alert("必須項目（Q1〜Q5）をすべて選択してください。");
+                return;
+            }
+
+            // プロンプトテンプレート
+            const prompt = `あなたは心理学・官能評価とデータ分析の専門家ですが、基本統計を全く知らない初学者の学生に対して、非常にわかりやすく説明するメンターです。
+以下の【実験の希望条件】に基づき、最適な実験手法と分析手順を提案してください。
+
+【実験の希望条件】
+・目的：${q1}
+・比較対象の数：${q2}
+・被験者の条件：${q3}
+・データの種類：${q4}
+・機材の予算感：${q5}
+・具体的な内容：${q6}
+
+【出力ルール】
+必ず以下の構成とフォーマットで回答してください。専門用語には簡単な補足をつけ、数式は使わないでください。
+1. 【概要】提案する実験手法と分析方法の名前、それで何が分かるのかを3行以内で説明。
+2. 【実験の設計図】（表または箇条書き）
+・やるべきこと（実験手順）：
+・理想的な機材：
+・【重要】低予算の代替機材案：※予算がない学生向けに、スマホアプリ、Webカメラ、フリーソフト、マイコン等を使った0円〜数万円以内の具体的な代替手法を必ず提案してください。
+・試料の条件：
+・目安となる被験者数：
+・取得すべきデータの種類：
+・分析方法：
+・この分析で何が分かるか：
+3. 【少し専門的な解説】手法を選ぶ理由や、実験時に気をつけるべきバイアス（順序効果、疲労効果など）について解説。
+4. 【分析用ツール作成プロンプト】この実験で得られたデータをPythonで分析し、結果を視覚化（散布図やデンドログラムなど）するためのコードを、後で私が別のチャットでGPTなどに作らせるための「依頼用プロンプト」を出力してください。ダミーデータの生成も含めるように指示してください。`;
+
+            // 出力と表示
+            document.getElementById('promptOutput').value = prompt;
+            document.getElementById('resultArea').classList.remove('hidden');
+            
+            // スクロール
+            document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+            
+            // コピーボタンのリセット
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.textContent = 'コピーする';
+            copyBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            copyBtn.classList.add('bg-gray-800', 'hover:bg-gray-900');
+        }
+
+        function copyToClipboard() {
+            const outputArea = document.getElementById('promptOutput');
+            outputArea.select();
+            
+            // execCommandをフォールバックとして使用（iframe内でのクリップボード動作を確実にするため）
+            try {
+                document.execCommand('copy');
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.textContent = 'コピーしました！';
+                copyBtn.classList.remove('bg-gray-800', 'hover:bg-gray-900');
+                copyBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            } catch (err) {
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            }
+        }
+    </script>
+</body>
+</html>
